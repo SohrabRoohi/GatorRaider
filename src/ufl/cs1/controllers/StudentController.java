@@ -22,14 +22,14 @@ public final class StudentController implements DefenderController {
 
 		//Chooses a random LEGAL action if required. Could be much simpler by simply returning
 		//any random number of all of the ghosts
-		actions[0] = firstDefenderAction(enemies.get(0), game);
-		actions[1] = firstDefenderAction(enemies.get(1), game);
-		actions[2] = firstDefenderAction(enemies.get(2), game);
-		actions[3] = firstDefenderAction(enemies.get(3), game);
+		actions[0] = DefenderAction(enemies.get(0), game);
+		actions[1] = DefenderAction(enemies.get(1), game);
+		//actions[2] = DefenderAction(enemies.get(2), game);
+		//actions[3] = DefenderAction(enemies.get(3), game);
 		return actions;
 	}
 
-	public int firstDefenderAction(Defender defender, Game game) {
+	public int DefenderAction(Defender defender, Game game) {
 		List<Node> attackerPossibleLocations = game.getAttacker().getPossibleLocations(true);
 		int attackerX = -1;
 		int attackerY = -1;
@@ -56,13 +56,25 @@ public final class StudentController implements DefenderController {
 			// 1 is right
 			// 2 is down
 			// 3 is left
-			if (defenderX > attackerX && possibleDirs.contains(3) && xDistance > yDistance) {
+			if (defenderX > attackerX && possibleDirs.contains(3) && xDistance >= yDistance) {
+				if(defender.isVulnerable() && possibleDirs.contains(1)) {
+					return 1;
+				}
 				return 3;
-			} else if (defenderX < attackerX && possibleDirs.contains(1) && xDistance > yDistance) {
+			} else if (defenderX < attackerX && possibleDirs.contains(1) && xDistance >= yDistance) {
+				if(defender.isVulnerable() && possibleDirs.contains(3)) {
+					return 3;
+				}
 				return 1;
-			} else if (defenderY > attackerY && possibleDirs.contains(0) && yDistance > xDistance) {
+			} else if ((defenderY > attackerY && possibleDirs.contains(0) && yDistance >= xDistance) || (yDistance <= xDistance && defenderY > attackerY && !possibleDirs.contains(1) && !possibleDirs.contains(3))) {
+				if(defender.isVulnerable() && possibleDirs.contains(2)) {
+					return 2;
+				}
 				return 0;
-			} else if (defenderY < attackerY && possibleDirs.contains(2) && yDistance > xDistance) {
+			} else if (defenderY < attackerY && possibleDirs.contains(2) && yDistance >= xDistance || (yDistance <= xDistance && defenderY < attackerY && !possibleDirs.contains(1) && !possibleDirs.contains(3))) {
+				if(defender.isVulnerable() && possibleDirs.contains(0)) {
+					return 0;
+				}
 				return 2;
 			} else {
 				return -1;
@@ -70,6 +82,7 @@ public final class StudentController implements DefenderController {
 		else
 			return -1;
 	}
+
 
 }
 
