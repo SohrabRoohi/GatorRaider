@@ -9,6 +9,8 @@ import java.lang.reflect.Array;
 import java.util.List;
 import java.util.ArrayList;
 
+import static game.models.Game.NUM_DEFENDER;
+
 public final class StudentController implements DefenderController {
 	public void init(Game game) {
 	}
@@ -71,6 +73,35 @@ public final class StudentController implements DefenderController {
 			return -1;
 	}
 
+	public int fourthDefenderAction(Defender defender, Game game){
 
+		List<Node> powerPillNodes = game.getPowerPillList();
+		int distAttacktoPowerpill;
+		List<Defender> listDefenders = game.getDefenders();
+		int distBetweenDefenders;
+
+
+		for(int i = 0; i < powerPillNodes.size(); i++) {
+
+			distAttacktoPowerpill = game.getAttacker().getLocation().getPathDistance(powerPillNodes.get(i));
+
+			if ((distAttacktoPowerpill >= 6 && distAttacktoPowerpill <= 9) || defender.isVulnerable()) {
+				return defender.getNextDir(game.getAttacker().getLocation(), false);
+			}
+			else{
+				return defender.getNextDir(game.getAttacker().getLocation(), true);
+			}
+
+		}
+
+		for(int j = 0; j < NUM_DEFENDER - 1; j++){
+			distBetweenDefenders = defender.getLocation().getPathDistance(listDefenders.get(j).getLocation());
+			if(distBetweenDefenders < 2 && (defender.getDirection() == listDefenders.get(j).getDirection())){
+				return defender.getReverse();
+			}
+		}
+
+		return defender.getNextDir(game.getAttacker().getLocation(), true);
+	}
 }
 
