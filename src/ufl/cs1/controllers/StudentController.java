@@ -74,16 +74,13 @@ public final class StudentController implements DefenderController {
 			return -1;
 	}
 
-    public int thirdDefenderAction(Actor defender, Game game) {
-        int direction;
-        boolean approach = !game.getDefender(0).isVulnerable();
-        direction = defender.getNextDir(game.getAttacker().getLocation(), approach);
-
-        if (!approach) {
-            direction = defender.getReverse();
-        }
-        return direction;
-    }
+	public int thirdDefenderAction(Defender defender, Game game) {
+		int direction;
+		boolean approach = !defender.isVulnerable();
+		direction = defender.getNextDir(game.getAttacker().getLocation(), approach);
+		List<Integer> possibleDirections = defender.getPossibleDirs();
+		return direction;
+	}
 
 
 
