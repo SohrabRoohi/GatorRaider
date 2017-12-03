@@ -98,21 +98,14 @@ public final class StudentController implements DefenderController {
 		for(int i = 0; i < powerPillNodes.size(); i++) {
 
 			distAttacktoPowerpill = game.getAttacker().getLocation().getPathDistance(powerPillNodes.get(i));
-
-			if ((distAttacktoPowerpill >= 6 && distAttacktoPowerpill <= 9) || defender.isVulnerable()) {
+			distBetweenDefenders = defender.getLocation().getPathDistance(listDefenders.get(i).getLocation());
+			if ((distAttacktoPowerpill >= 6 && distAttacktoPowerpill <= 17) || defender.isVulnerable() || (distBetweenDefenders < 2 && (defender.getDirection() == listDefenders.get(i).getDirection()))) {
 				return defender.getNextDir(game.getAttacker().getLocation(), false);
 			}
 			else{
 				return defender.getNextDir(game.getAttacker().getLocation(), true);
 			}
 
-		}
-
-		for(int j = 0; j < NUM_DEFENDER - 1; j++){
-			distBetweenDefenders = defender.getLocation().getPathDistance(listDefenders.get(j).getLocation());
-			if(distBetweenDefenders < 2 && (defender.getDirection() == listDefenders.get(j).getDirection())){
-				return defender.getReverse();
-			}
 		}
 
 		return defender.getNextDir(game.getAttacker().getLocation(), true);
