@@ -22,10 +22,10 @@ public final class StudentController implements DefenderController {
 
 		//Chooses a random LEGAL action if required. Could be much simpler by simply returning
 		//any random number of all of the ghosts
-		actions[0] = DefenderAction(enemies.get(0), game);
+		actions[0] = thirdDefenderAction(enemies.get(0), game);
 		actions[1] = DefenderAction(enemies.get(1), game);
-		actions[2] = thirdDefenderAction(enemies.get(2), game);
-		actions[3] = fourthDefenderAction(enemies.get(3), game);
+		actions[2] = fourthDefenderAction(enemies.get(2), game);
+		actions[3] = DefenderAction(enemies.get(3), game);
 		return actions;
 	}
 
@@ -44,23 +44,24 @@ public final class StudentController implements DefenderController {
 			// 1 is right
 			// 2 is down
 			// 3 is left
+
 			if (defenderX > attackerX && possibleDirs.contains(3) && xDistance >= yDistance) {
-				if(defender.isVulnerable() && possibleDirs.contains(1)) {
+				if((defender.isVulnerable() || distanceToPill(game) < 15) && possibleDirs.contains(1)) {
 					return 1;
 				}
 				return 3;
 			} else if (defenderX < attackerX && possibleDirs.contains(1) && xDistance >= yDistance) {
-				if(defender.isVulnerable() && possibleDirs.contains(3)) {
+				if((defender.isVulnerable() || distanceToPill(game) < 15) && possibleDirs.contains(3)) {
 					return 3;
 				}
 				return 1;
 			} else if ((defenderY > attackerY && possibleDirs.contains(0) && yDistance >= xDistance) || (yDistance <= xDistance && defenderY > attackerY && !possibleDirs.contains(1) && !possibleDirs.contains(3))) {
-				if(defender.isVulnerable() && possibleDirs.contains(2)) {
+				if((defender.isVulnerable() || distanceToPill(game) < 15) && possibleDirs.contains(2)) {
 					return 2;
 				}
 				return 0;
 			} else if (defenderY < attackerY && possibleDirs.contains(2) && yDistance >= xDistance || (yDistance <= xDistance && defenderY < attackerY && !possibleDirs.contains(1) && !possibleDirs.contains(3))) {
-				if(defender.isVulnerable() && possibleDirs.contains(0)) {
+				if((defender.isVulnerable() || distanceToPill(game) < 15) && possibleDirs.contains(0)) {
 					return 0;
 				}
 				return 2;
@@ -81,7 +82,7 @@ public final class StudentController implements DefenderController {
 		double distanceToPill = 5000000;
 		int pillIndex = -1;
 		for(int i = 0; i < pillLocations.size(); i++) {
-			double distance = Math.sqrt(Math.pow(aLocation.getX() - pillLocations.get(i).getX(), 2) + Math.pow(aLocation.getY() - pillLocations.get(i).getY(), 2));
+			double distance = distanceToPill(game);
 			if(distance < distanceToPill) {
 				distanceToPill = distance;
 				pillIndex = i;
@@ -92,6 +93,9 @@ public final class StudentController implements DefenderController {
 		}
 		else {
 			direction = defender.getNextDir(aLocation, approach);
+		}
+		if(distanceToAttacker < 30) {
+			direction = trappedAlternateDirection(defender, game);
 		}
 		return direction;
 	}
@@ -118,8 +122,93 @@ public final class StudentController implements DefenderController {
 			}
 
 		}
-
-		return defender.getNextDir(game.getAttacker().getLocation(), true);
+		int direction = defender.getNextDir(game.getAttacker().getLocation(), true);
+		return direction;
 	}
+
+	public double distanceToPill(Game game) {
+		Node aLocation = game.getAttacker().getLocation();
+		List<Node> pillLocations = game.getPowerPillList();
+		double distance = 50000000;
+		for(int i = 0; i < pillLocations.size(); i++) {
+			distance = Math.sqrt(Math.pow(aLocation.getX() - pillLocations.get(i).getX(), 2) + Math.pow(aLocation.getY() - pillLocations.get(i).getY(), 2));
+		}
+		return distance;
+	}
+
+	public int trappedAlternateDirection(Defender defender, Game game) {
+		List<Defender> defenderList = game.getDefenders();
+		boolean isClose = false;
+		for(int i = 0; i < 4; i++) {
+			if(defender != defenderList.get(i)) {
+				if(distanceToAttacker(defenderList.get(i), game) < 5 && distanceToAttacker(defender, game) < 20) {
+					isClose = true;
+				}
+			}
+		}
+		int direction = defender.getNextDir(game.getAttacker().getLocation(), true);
+		ArrayList<Integer> nonDirection = new ArrayList<Integer>();
+		for(int i = 0; i < 4; i++) {
+			if(i != direction)  {
+				nonDirection.add(direction);
+			}
+		}
+		List<Integer> possibleDirections = defender.getPossibleDirs();
+		Node aLocation = game.getAttacker().getLocation();
+		int aX = aLocation.getX();
+		int aY = aLocation.getY();
+		int dX = defender.getLocation().getX();
+		int dY = defender.getLocation().getY();
+		for(int i = 0; i < nonDirection.size(); i++) {
+			if(possibleDirections.contains(nonDirection.get(i)) && !isOppositeDirection(nonDirection.get(i), dX, dY, aX, aY )) {
+				direction = nonDirection.get(i);
+			}
+		}
+		return direction;
+
+	}
+
+	public double distanceToAttacker(Defender defender, Game game) {
+		Node aLocation = game.getAttacker().getLocation();
+		int aX = aLocation.getX();
+		int aY = aLocation.getY();
+		int dX = defender.getLocation().getX();
+		int dY = defender.getLocation().getY();
+		double distance = Math.sqrt(Math.pow(aX - dX, 2) + Math.pow(aY - dY, 2));
+		return distance;
+	}
+
+	boolean isOppositeDirection(int direction, int defenderX, int defenderY, int attackerX, int attackerY) {
+		if (direction == 0) {
+			int upDifference = Math.abs(defenderY - attackerY) - Math.abs(defenderY - 1 - attackerY);
+			if(upDifference < 0) {
+				return true;
+			}
+			return false;
+		}
+		else if(direction == 1) {
+			int rightDifference = Math.abs(defenderX - attackerX) - Math.abs(defenderX + 1 - attackerX);
+			if(rightDifference < 0) {
+				return true;
+			}
+			return false;
+		}
+		else if(direction == 2) {
+			int downDifference = Math.abs(defenderY - attackerY) - Math.abs(defenderY + 1 - attackerY);
+			if(downDifference < 0) {
+				return true;
+			}
+			return false;
+		}
+		else if(direction == 3) {
+			int leftDifference = Math.abs(defenderX - attackerX) - Math.abs(defenderX - 1 - attackerX);
+			if(leftDifference < 0) {
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
+
 }
 

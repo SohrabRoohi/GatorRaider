@@ -75,6 +75,8 @@ public class Exec
      */
     public void runExperiment(AttackerController attackerController, DefenderController defenderController, int trials)
     {
+    	int delay = _Game.DELAY;
+    	boolean visual = false;
     	double avgScore=0;
     	
 		game=new _Game_();
@@ -82,6 +84,10 @@ public class Exec
 		for(int i=0;i<trials;i++)
 		{
 			game.newGame();
+			GameView gv = null;
+			if(i == 17 && visual == true) {
+				gv=new GameView(game).showGame();
+			}
 			attackerController.init(game.copy());
 			defenderController.init(game.copy());
 
@@ -89,6 +95,14 @@ public class Exec
 			{
 				long due=System.currentTimeMillis()+ _Game.DELAY;
 		        game.advanceGame(attackerController.update(game.copy(), due), defenderController.update(game.copy(), due));
+		        if(i == 17 && visual == true) {
+					try {
+						Thread.sleep(delay);
+					} catch (Exception e) {
+					}
+					if (visual)
+						gv.repaint();
+				}
 			}
 			
 			avgScore+=game.getScore();
