@@ -24,32 +24,20 @@ public final class StudentController implements DefenderController {
 		//any random number of all of the ghosts
 		actions[0] = DefenderAction(enemies.get(0), game);
 		actions[1] = DefenderAction(enemies.get(1), game);
-		//actions[2] = DefenderAction(enemies.get(2), game);
-		//actions[3] = DefenderAction(enemies.get(3), game);
+		actions[2] = DefenderAction(enemies.get(2), game);
+		actions[3] = DefenderAction(enemies.get(3), game);
 		return actions;
 	}
 
 	public int DefenderAction(Defender defender, Game game) {
-		List<Node> attackerPossibleLocations = game.getAttacker().getPossibleLocations(true);
-		int attackerX = -1;
-		int attackerY = -1;
-		for (int j = 0; j < 3; j++) {
-			if (attackerPossibleLocations.get(j) != null) {
-				attackerX = attackerPossibleLocations.get(j).getX();
-				attackerY = attackerPossibleLocations.get(j).getY();
-			}
-		}
-		List<Node> defenderPossibleLocations = defender.getPossibleLocations();
-		int defenderX = -1;
-		int defenderY = -1;
-		for (int j = 0; j < 3; j++) {
-			if (defenderPossibleLocations.get(j) != null) {
-				defenderX = defenderPossibleLocations.get(j).getX();
-				defenderY = defenderPossibleLocations.get(j).getY();
-			}
-		}
+		int attackerX = game.getAttacker().getLocation().getX();
+		int attackerY = game.getAttacker().getLocation().getY();
+		int defenderX = defender.getLocation().getX();
+		int defenderY = defender.getLocation().getY();
+
 		int xDistance = Math.abs(attackerX - defenderX);
 		int yDistance = Math.abs(attackerY - defenderY);
+
 		List<Integer> possibleDirs = defender.getPossibleDirs();
 		if (possibleDirs.size() != 0)
 			// 0 is up
