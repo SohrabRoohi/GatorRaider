@@ -153,15 +153,17 @@ public final class StudentController implements DefenderController {
 				nonDirection.add(direction);
 			}
 		}
-		List<Integer> possibleDirections = defender.getPossibleDirs();
-		Node aLocation = game.getAttacker().getLocation();
-		int aX = aLocation.getX();
-		int aY = aLocation.getY();
-		int dX = defender.getLocation().getX();
-		int dY = defender.getLocation().getY();
-		for(int i = 0; i < nonDirection.size(); i++) {
-			if(possibleDirections.contains(nonDirection.get(i)) && !isOppositeDirection(nonDirection.get(i), dX, dY, aX, aY )) {
-				direction = nonDirection.get(i);
+		if(isClose) {
+			List<Integer> possibleDirections = defender.getPossibleDirs();
+			Node aLocation = game.getAttacker().getLocation();
+			int aX = aLocation.getX();
+			int aY = aLocation.getY();
+			int dX = defender.getLocation().getX();
+			int dY = defender.getLocation().getY();
+			for (int i = 0; i < nonDirection.size(); i++) {
+				if (possibleDirections.contains(nonDirection.get(i)) && !isOppositeDirection(nonDirection.get(i), dX, dY, aX, aY)) {
+					direction = nonDirection.get(i);
+				}
 			}
 		}
 		return direction;
