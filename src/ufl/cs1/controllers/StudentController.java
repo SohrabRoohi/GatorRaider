@@ -1,6 +1,7 @@
 package ufl.cs1.controllers;
 
 import game.controllers.DefenderController;
+import game.models.Actor;
 import game.models.Defender;
 import game.models.Game;
 import game.models.Node;
@@ -26,8 +27,8 @@ public final class StudentController implements DefenderController {
 		//any random number of all of the ghosts
 		actions[0] = DefenderAction(enemies.get(0), game);
 		actions[1] = DefenderAction(enemies.get(1), game);
-		actions[2] = DefenderAction(enemies.get(2), game);
-		actions[3] = DefenderAction(enemies.get(3), game);
+		actions[2] = thirdDefenderAction(enemies.get(2), game);
+		actions[3] = fourthDefenderAction(enemies.get(3), game);
 		return actions;
 	}
 
@@ -72,6 +73,19 @@ public final class StudentController implements DefenderController {
 		else
 			return -1;
 	}
+
+    public int thirdDefenderAction(Actor defender, Game game) {
+        int direction;
+        boolean approach = !game.getDefender(0).isVulnerable();
+        direction = defender.getNextDir(game.getAttacker().getLocation(), approach);
+
+        if (!approach) {
+            direction = defender.getReverse();
+        }
+        return direction;
+    }
+
+
 
 	public int fourthDefenderAction(Defender defender, Game game){
 
