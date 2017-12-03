@@ -1,10 +1,7 @@
 package ufl.cs1.controllers;
 
 import game.controllers.DefenderController;
-import game.models.Actor;
-import game.models.Defender;
-import game.models.Game;
-import game.models.Node;
+import game.models.*;
 
 import java.lang.reflect.Array;
 import java.util.List;
@@ -77,8 +74,25 @@ public final class StudentController implements DefenderController {
 	public int thirdDefenderAction(Defender defender, Game game) {
 		int direction;
 		boolean approach = !defender.isVulnerable();
-		direction = defender.getNextDir(game.getAttacker().getLocation(), approach);
-		List<Integer> possibleDirections = defender.getPossibleDirs();
+		List<Node> pillLocations = game.getPowerPillList();
+		Node aLocation = game.getAttacker().getLocation();
+		Node dLocation = defender.getLocation();
+		double distanceToAttacker = Math.sqrt(Math.pow(aLocation.getX() - dLocation.getX(), 2) + Math.pow(aLocation.getY() - dLocation.getY(), 2));
+		double distanceToPill = 5000000;
+		int pillIndex = -1;
+		for(int i = 0; i < pillLocations.size(); i++) {
+			double distance = Math.sqrt(Math.pow(aLocation.getX() - pillLocations.get(i).getX(), 2) + Math.pow(aLocation.getY() - pillLocations.get(i).getY(), 2));
+			if(distance < distanceToPill) {
+				distanceToPill = distance;
+				pillIndex = i;
+			}
+		}
+		if(pillIndex != -1 && distanceToAttacker > 40) {
+			direction = defender.getNextDir(pillLocations.get(pillIndex), approach);
+		}
+		else {
+			direction = defender.getNextDir(aLocation, approach);
+		}
 		return direction;
 	}
 
