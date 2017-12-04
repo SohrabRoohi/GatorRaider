@@ -104,11 +104,10 @@ public final class StudentController implements DefenderController {
 
 	public int fourthDefenderAction(Defender defender, Game game){
 
-		List<Node> powerPillNodes = game.getPowerPillList();
+		List<Node> powerPillNodes = game.getCurMaze().getPowerPillNodes();
 		int distAttacktoPowerpill;
 		List<Defender> listDefenders = game.getDefenders();
 		int distBetweenDefenders;
-
 
 		for(int i = 0; i < powerPillNodes.size(); i++) {
 
@@ -122,8 +121,7 @@ public final class StudentController implements DefenderController {
 			}
 
 		}
-		int direction = defender.getNextDir(game.getAttacker().getLocation(), true);
-		return direction;
+		return defender.getNextDir(game.getAttacker().getLocation(), true);
 	}
 
 	public double distanceToPill(Game game) {
