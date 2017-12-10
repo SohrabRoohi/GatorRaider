@@ -92,7 +92,7 @@ public final class StudentController implements DefenderController {
 			direction = defender.getNextDir(pillLocations.get(pillIndex), approach); //orient the defender towards the closest power pill when the distance is more than 40 unit distance away
 		}
 		else {
-			direction = defender.getNextDir(aLocation, approach); //orient the defender towards the attacker
+			direction = defender.getNextDir(aLocation, approach); //orient the defender towards the attacker when it's not vulnerable mode
 		}
 		if(distanceToAttacker < 30) {
 			direction = trappedAlternateDirection(defender, game); //if the defender is less than 30 unit distance away from the attacker, get new direction to trap the attacker from the other side
