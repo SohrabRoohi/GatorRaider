@@ -22,9 +22,9 @@ public final class StudentController implements DefenderController {
 
 		//Chooses a random LEGAL action if required. Could be much simpler by simply returning
 		//any random number of all of the ghosts
-		actions[0] = thirdDefenderAction(enemies.get(0), game);
+		actions[0] = firstDefenderAction(enemies.get(0), game);
 		actions[1] = DefenderAction(enemies.get(1), game);
-		actions[2] = fourthDefenderAction(enemies.get(2), game);
+		actions[2] = thirdDefenderAction(enemies.get(2), game);
 		actions[3] = DefenderAction(enemies.get(3), game);
 		return actions;
 	}
@@ -72,7 +72,7 @@ public final class StudentController implements DefenderController {
 			return -1;
 	}
 
-	public int thirdDefenderAction(Defender defender, Game game) {
+	public int firstDefenderAction(Defender defender, Game game) {
 		int direction;
 		boolean approach = !defender.isVulnerable();
 		List<Node> pillLocations = game.getPowerPillList();
@@ -102,7 +102,7 @@ public final class StudentController implements DefenderController {
 
 
 
-	public int fourthDefenderAction(Defender defender, Game game){
+	public int thirdDefenderAction(Defender defender, Game game){
 		int shortdistOtherDefendtoAttack = 100;
 		int otherDefenderIndex = 0;
 
@@ -130,7 +130,7 @@ public final class StudentController implements DefenderController {
 		else{
 			return defender.getNextDir(game.getAttacker().getLocation(), true);
 		}
-		
+
 	}
 
 	public double distanceToPill(Game game) {
