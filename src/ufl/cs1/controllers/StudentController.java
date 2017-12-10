@@ -103,25 +103,34 @@ public final class StudentController implements DefenderController {
 
 
 	public int fourthDefenderAction(Defender defender, Game game){
+		int shortdistOtherDefendtoAttack = 100;
+		int otherDefenderIndex = 0;
 
-		List<Node> powerPillNodes = game.getCurMaze().getPowerPillNodes();
-		int distAttacktoPowerpill;
-		List<Defender> listDefenders = game.getDefenders();
-		int distBetweenDefenders;
-
-		for(int i = 0; i < powerPillNodes.size(); i++) {
-
-			distAttacktoPowerpill = game.getAttacker().getLocation().getPathDistance(powerPillNodes.get(i));
-			distBetweenDefenders = defender.getLocation().getPathDistance(listDefenders.get(i).getLocation());
-			if ((distAttacktoPowerpill >= 6 && distAttacktoPowerpill <= 17) || defender.isVulnerable() || (distBetweenDefenders < 2 && (defender.getDirection() == listDefenders.get(i).getDirection()))) {
-				return defender.getNextDir(game.getAttacker().getLocation(), false);
+		for(int i = 0; i < NUM_DEFENDER; i++){
+			if (i == 2){
+				i = 3;
+				continue;
 			}
-			else{
-				return defender.getNextDir(game.getAttacker().getLocation(), true);
+			if (game.getDefender(i).getLocation().getPathDistance(game.getAttacker().getLocation()) < shortdistOtherDefendtoAttack){
+				shortdistOtherDefendtoAttack = game.getDefender(i).getLocation().getPathDistance(game.getAttacker().getLocation());
+				otherDefenderIndex = i;
 			}
-
 		}
-		return defender.getNextDir(game.getAttacker().getLocation(), true);
+
+		int defDirection = defender.getDirection();
+		int otherDefDirection = game.getDefender(otherDefenderIndex).getDirection();
+		int attackerDirection = game.getAttacker().getDirection();
+
+		if ((shortdistOtherDefendtoAttack < 4) && (attackerDirection == otherDefDirection) && (otherDefDirection == defDirection) && !defender.isVulnerable() ){
+			return defender.getReverse();
+		}
+		else if(defender.isVulnerable() && game.getCurMaze().getNumberPowerPills() != 0){
+			return defender.getNextDir(game.getAttacker().getLocation(), false);
+		}
+		else{
+			return defender.getNextDir(game.getAttacker().getLocation(), true);
+		}
+		
 	}
 
 	public double distanceToPill(Game game) {
