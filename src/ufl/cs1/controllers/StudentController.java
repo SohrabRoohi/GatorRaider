@@ -76,26 +76,26 @@ public final class StudentController implements DefenderController {
 		int direction;
 		boolean approach = !defender.isVulnerable();
 		List<Node> pillLocations = game.getPowerPillList();
-		Node aLocation = game.getAttacker().getLocation();
-		Node dLocation = defender.getLocation();
-		double distanceToAttacker = Math.sqrt(Math.pow(aLocation.getX() - dLocation.getX(), 2) + Math.pow(aLocation.getY() - dLocation.getY(), 2));
-		double distanceToPill = 5000000;
+		Node aLocation = game.getAttacker().getLocation(); //location of the attacker
+		Node dLocation = defender.getLocation(); //location of the defender
+		double distanceToAttacker = Math.sqrt(Math.pow(aLocation.getX() - dLocation.getX(), 2) + Math.pow(aLocation.getY() - dLocation.getY(), 2)); //calculate the distance between defender and attacker with the distance formula
+		double distanceToPill = 5000000; //choose a large number to compare with
 		int pillIndex = -1;
 		for(int i = 0; i < pillLocations.size(); i++) {
 			double distance = distanceToPill(game);
 			if(distance < distanceToPill) {
 				distanceToPill = distance;
-				pillIndex = i;
+				pillIndex = i; //find the closest power pill
 			}
 		}
 		if(pillIndex != -1 && distanceToAttacker > 40) {
-			direction = defender.getNextDir(pillLocations.get(pillIndex), approach);
+			direction = defender.getNextDir(pillLocations.get(pillIndex), approach); //orient the defender towards the closest power pill when the distance is more than 40 unit distance away
 		}
 		else {
-			direction = defender.getNextDir(aLocation, approach);
+			direction = defender.getNextDir(aLocation, approach); //orient the defender towards the attacker when it's not vulnerable mode
 		}
 		if(distanceToAttacker < 30) {
-			direction = trappedAlternateDirection(defender, game);
+			direction = trappedAlternateDirection(defender, game); //if the defender is less than 30 unit distance away from the attacker, get new direction to trap the attacker from the other side
 		}
 		return direction;
 	}
