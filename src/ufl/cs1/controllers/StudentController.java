@@ -9,6 +9,9 @@ import java.util.ArrayList;
 
 import static game.models.Game.NUM_DEFENDER;
 
+
+
+//By Sohrab Roohi, Tyler Knightes, Yadi Qian
 public final class StudentController implements DefenderController {
 	public void init(Game game) {
 	}
