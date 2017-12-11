@@ -111,28 +111,28 @@ public final class StudentController implements DefenderController {
 		int otherDefenderIndex = 0;
 
 		for(int i = 0; i < NUM_DEFENDER; i++){
-			if (i == 2){
+			if (i == 2){ //If i = 2, that represents this defender, so it should be skipped, as it is not necessary to find the distance to itself
 				i = 3;
 				continue;
 			}
-			if (game.getDefender(i).getLocation().getPathDistance(game.getAttacker().getLocation()) < shortdistOtherDefendtoAttack){
-				shortdistOtherDefendtoAttack = game.getDefender(i).getLocation().getPathDistance(game.getAttacker().getLocation());
-				otherDefenderIndex = i;
+			if (game.getDefender(i).getLocation().getPathDistance(game.getAttacker().getLocation()) < shortdistOtherDefendtoAttack){ //If the distance from defender i is shorter than the current shortest distance from a defender to the attacker, this executes
+				shortdistOtherDefendtoAttack = game.getDefender(i).getLocation().getPathDistance(game.getAttacker().getLocation()); //The defender distance to attacker from above line is set to the variable shortdistOtherDefendtoAttack
+				otherDefenderIndex = i; //Records the index of the closest defender
 			}
 		}
 
-		int defDirection = defender.getDirection();
-		int otherDefDirection = game.getDefender(otherDefenderIndex).getDirection();
-		int attackerDirection = game.getAttacker().getDirection();
+		int defDirection = defender.getDirection(); //Direction of this defender
+		int otherDefDirection = game.getDefender(otherDefenderIndex).getDirection(); //Direction of closest other defender
+		int attackerDirection = game.getAttacker().getDirection(); //Direction of attacker
 
-		if ((shortdistOtherDefendtoAttack < 4) && (attackerDirection == otherDefDirection) && (otherDefDirection == defDirection) && !defender.isVulnerable() ){
+		if ((shortdistOtherDefendtoAttack < 4) && (attackerDirection == otherDefDirection) && (otherDefDirection == defDirection) && !defender.isVulnerable() ){ //If statement executes only if the 4 conditions are true
 			return defender.getReverse();
 		}
-		else if(defender.isVulnerable() && game.getCurMaze().getNumberPowerPills() != 0){
+		else if(defender.isVulnerable() && game.getCurMaze().getNumberPowerPills() != 0){ //Uses current maze state and defender state. If vulnerable or if there are still power pills on the maze, the defender runs away
 			return defender.getNextDir(game.getAttacker().getLocation(), false);
 		}
 		else{
-			return defender.getNextDir(game.getAttacker().getLocation(), true);
+			return defender.getNextDir(game.getAttacker().getLocation(), true); //Otherwise, the defender will chase the attacker
 		}
 
 	}

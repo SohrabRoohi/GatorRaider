@@ -24,7 +24,7 @@ public class _Game_ extends _Game
 	{	
 		init();		//load mazes if not yet loaded
 		
-		curMaze=0;
+		curMaze= 0;
 
 		defenders = new _Defender[_Game.NUM_DEFENDER];
 
