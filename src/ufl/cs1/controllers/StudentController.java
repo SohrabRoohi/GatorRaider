@@ -30,46 +30,50 @@ public final class StudentController implements DefenderController {
 	}
 
 	public int DefenderAction(Defender defender, Game game) {
-		int attackerX = game.getAttacker().getLocation().getX();
-		int attackerY = game.getAttacker().getLocation().getY();
-		int defenderX = defender.getLocation().getX();
-		int defenderY = defender.getLocation().getY();
+		int attackerX = game.getAttacker().getLocation().getX(); //Gets attacker X position
+		int attackerY = game.getAttacker().getLocation().getY(); //Gets attacker Y position
+		int defenderX = defender.getLocation().getX(); //Gets defender X position
+		int defenderY = defender.getLocation().getY(); //Gets defender Y position
 
-		int xDistance = Math.abs(attackerX - defenderX);
-		int yDistance = Math.abs(attackerY - defenderY);
+		int xDistance = Math.abs(attackerX - defenderX); //Calculates horizontal distance from defender to pacman
+		int yDistance = Math.abs(attackerY - defenderY); //Calculates vertical distatnce from defender to pacman
 
-		List<Integer> possibleDirs = defender.getPossibleDirs();
-		if (possibleDirs.size() != 0)
+		List<Integer> possibleDirs = defender.getPossibleDirs(); //Gets possible next directions of defender
+		double attackerDistanceFromPill = distanceToPill(game); //Finds distance from pacman to closest powerpill
+		boolean vulnerable = defender.isVulnerable(); //Checks to see if defender is vulnerable
+		if (possibleDirs.size() != 0) {
 			// 0 is up
 			// 1 is right
 			// 2 is down
 			// 3 is left
 
-			if (defenderX > attackerX && possibleDirs.contains(3) && xDistance >= yDistance) {
-				if((defender.isVulnerable() || distanceToPill(game) < 15) && possibleDirs.contains(1)) {
+			if (defenderX > attackerX && possibleDirs.contains(3) && xDistance >= yDistance) { //Prioritize moving horizontally
+				if ((vulnerable || attackerDistanceFromPill < 1) && possibleDirs.contains(1)) { //Go opposite direction
 					return 1;
 				}
 				return 3;
-			} else if (defenderX < attackerX && possibleDirs.contains(1) && xDistance >= yDistance) {
-				if((defender.isVulnerable() || distanceToPill(game) < 15) && possibleDirs.contains(3)) {
+			} else if (defenderX < attackerX && possibleDirs.contains(1) && xDistance >= yDistance) { //Prioritize moving horizontally
+				if ((vulnerable || attackerDistanceFromPill < 1) && possibleDirs.contains(3)) { //Go opposite direction
 					return 3;
 				}
 				return 1;
-			} else if ((defenderY > attackerY && possibleDirs.contains(0) && yDistance >= xDistance) || (yDistance <= xDistance && defenderY > attackerY && !possibleDirs.contains(1) && !possibleDirs.contains(3))) {
-				if((defender.isVulnerable() || distanceToPill(game) < 15) && possibleDirs.contains(2)) {
+			} else if ((defenderY > attackerY && possibleDirs.contains(0) && yDistance >= xDistance) || (yDistance <= xDistance && defenderY > attackerY && !possibleDirs.contains(1) && !possibleDirs.contains(3))) { //Prioritize moving vertically
+				if ((vulnerable || attackerDistanceFromPill < 1) && possibleDirs.contains(2)) { //Go opposite direction
 					return 2;
 				}
 				return 0;
-			} else if (defenderY < attackerY && possibleDirs.contains(2) && yDistance >= xDistance || (yDistance <= xDistance && defenderY < attackerY && !possibleDirs.contains(1) && !possibleDirs.contains(3))) {
-				if((defender.isVulnerable() || distanceToPill(game) < 15) && possibleDirs.contains(0)) {
+			} else if (defenderY < attackerY && possibleDirs.contains(2) && yDistance >= xDistance || (yDistance <= xDistance && defenderY < attackerY && !possibleDirs.contains(1) && !possibleDirs.contains(3))) { //Prioritize moving vertically
+				if ((vulnerable || attackerDistanceFromPill < 1) && possibleDirs.contains(0)) { //Go opposite direction
 					return 0;
 				}
 				return 2;
 			} else {
 				return -1;
 			}
-		else
+		}
+		else {
 			return -1;
+		}
 	}
 
 	public int firstDefenderAction(Defender defender, Game game) {
@@ -134,13 +138,16 @@ public final class StudentController implements DefenderController {
 	}
 
 	public double distanceToPill(Game game) {
-		Node aLocation = game.getAttacker().getLocation();
-		List<Node> pillLocations = game.getPowerPillList();
-		double distance = 50000000;
-		for(int i = 0; i < pillLocations.size(); i++) {
-			distance = Math.sqrt(Math.pow(aLocation.getX() - pillLocations.get(i).getX(), 2) + Math.pow(aLocation.getY() - pillLocations.get(i).getY(), 2));
+		Node aLocation = game.getAttacker().getLocation(); //Get attacker location
+		List<Node> pillLocations = game.getPowerPillList(); //Get powerpill list
+		double distance = 50000000; //Sets large number for comparison
+		for(int i = 0; i < pillLocations.size(); i++) { //Finds distance to closest powerpill
+			double temp = Math.sqrt(Math.pow(aLocation.getX() - pillLocations.get(i).getX(), 2) + Math.pow(aLocation.getY() - pillLocations.get(i).getY(), 2));
+			if(temp < distance) {
+				distance = temp;
+			}
 		}
-		return distance;
+		return distance; //Returns distance
 	}
 
 	public int trappedAlternateDirection(Defender defender, Game game) {
@@ -148,7 +155,7 @@ public final class StudentController implements DefenderController {
 		boolean isClose = false;
 		for(int i = 0; i < 4; i++) {
 			if(defender != defenderList.get(i)) {
-				if(distanceToAttacker(defenderList.get(i), game) < 5 && distanceToAttacker(defender, game) < 20) {
+				if(distanceToAttacker(defenderList.get(i), game) < 5 && distanceToAttacker(defender, game) < 20) { //Checks to see if another defender is close to the pacman
 					isClose = true;
 				}
 			}
@@ -157,7 +164,7 @@ public final class StudentController implements DefenderController {
 		ArrayList<Integer> nonDirection = new ArrayList<Integer>();
 		for(int i = 0; i < 4; i++) {
 			if(i != direction)  {
-				nonDirection.add(direction);
+				nonDirection.add(direction); //Adds directions that are alternate
 			}
 		}
 		if(isClose) {
@@ -168,7 +175,7 @@ public final class StudentController implements DefenderController {
 			int dX = defender.getLocation().getX();
 			int dY = defender.getLocation().getY();
 			for (int i = 0; i < nonDirection.size(); i++) {
-				if (possibleDirections.contains(nonDirection.get(i)) && !isOppositeDirection(nonDirection.get(i), dX, dY, aX, aY)) {
+				if (possibleDirections.contains(nonDirection.get(i)) && !isOppositeDirection(nonDirection.get(i), dX, dY, aX, aY)) { //Finds another direction to trap the pacman
 					direction = nonDirection.get(i);
 				}
 			}
@@ -178,16 +185,17 @@ public final class StudentController implements DefenderController {
 	}
 
 	public double distanceToAttacker(Defender defender, Game game) {
-		Node aLocation = game.getAttacker().getLocation();
+		Node aLocation = game.getAttacker().getLocation(); //Gets attacker location
 		int aX = aLocation.getX();
 		int aY = aLocation.getY();
 		int dX = defender.getLocation().getX();
 		int dY = defender.getLocation().getY();
-		double distance = Math.sqrt(Math.pow(aX - dX, 2) + Math.pow(aY - dY, 2));
+		double distance = Math.sqrt(Math.pow(aX - dX, 2) + Math.pow(aY - dY, 2)); //Uses distance formula to find distance from defender to attacker
 		return distance;
 	}
 
 	boolean isOppositeDirection(int direction, int defenderX, int defenderY, int attackerX, int attackerY) {
+		//Checks to see if going a certain direction will go away from the pacman
 		if (direction == 0) {
 			int upDifference = Math.abs(defenderY - attackerY) - Math.abs(defenderY - 1 - attackerY);
 			if(upDifference < 0) {
